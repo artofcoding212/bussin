@@ -256,10 +256,10 @@ export function eval_call_expr(expr: CallExpr, env: Environment): RuntimeVal {
                 clone.tagged = args[0];
                 return clone;
             }
-            default:
-                throw "Cannot call value that is not a function or enum: " + JSON.stringify(fn);
         }
     }
+
+    throw "Cannot call value that is not a function or enum: " + JSON.stringify(fn);
 }
 
 export function eval_member_expr(env: Environment, node?: AssignmentExpr, expr?: MemberExpr): RuntimeVal {

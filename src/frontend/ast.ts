@@ -136,6 +136,7 @@ export interface Expr extends Stmt {}
  * Example: new Foo(1, 2, 3);
  */
 export interface NewExpr extends Expr {
+  kind: "NewExpr";
   target: Expr;
   args: Array<Expr>;
 }

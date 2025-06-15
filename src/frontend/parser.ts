@@ -97,7 +97,7 @@ export default class Parser {
                 return this.parse_var_declaration();
             case TokenType.Fn: {
                 this.eat(); // eat fn keyword
-                const name = this.at().type == TokenType.Identifier ? this.eat().value : "<anonymous>";
+                const name = this.expect(TokenType.Identifier, "Expected an Identifier for the function name in a function declaration.").value;
                 return this.parse_function_declaration(name);
             }
             case TokenType.Throw: {
@@ -720,6 +720,8 @@ export default class Parser {
                             cases.set(case_arr, body);
                         }
                         defaultCase = body;
+                    } else {
+                        cases.set(case_arr, body);
                     }
                 }
 
