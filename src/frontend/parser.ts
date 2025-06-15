@@ -1,4 +1,3 @@
-import { BreakStatement, ClassDeclaration, ReturnStatement, ThrowStatement, WhileStatement } from "typescript";
 import { Stmt, Program, Expr, BinaryExpr, NumericLiteral, Identifier, VarDeclaration, AssignmentExpr, Property, ObjectLiteral, CallExpr, MemberExpr, FunctionDeclaration, StringLiteral, IfStatement, ForStatement, TryCatchStatement, ArrayLiteral, ClassDeclarationStmt, ReturnStmt, NewExpr, WhileStmt, EnumDeclarationStmt, MatchExpr, ThrowStmt, BreakStmt, ContinueStmt } from "./ast";
 import { tokenize, Token, TokenType } from "./lexer";
 
