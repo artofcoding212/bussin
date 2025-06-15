@@ -1,6 +1,6 @@
 import { MK_NULL, NumberVal, RuntimeVal, StringVal } from "./values";
 import { ArrayLiteral, AssignmentExpr, BinaryExpr, CallExpr, ClassDeclarationStmt, EnumDeclarationStmt, ForStatement, FunctionDeclaration, Identifier, IfStatement, MatchExpr, MemberExpr, NewExpr, NumericLiteral, ObjectLiteral, Program, ReturnStmt, Stmt, StringLiteral, ThrowStmt, TryCatchStatement, VarDeclaration, WhileStmt } from "../frontend/ast";
-import Environment from "./environment"
+import Environment, { ContinueType } from "./environment"
 import { eval_function_declaration, eval_program, eval_val_declaration, eval_if_statement, eval_for_statement, eval_try_catch_statement, eval_class_declaration, eval_enum_declaration, eval_while_statement } from "./eval/statements";
 import { eval_identifier, eval_binary_expr, eval_assignment, eval_object_expr, eval_call_expr, eval_member_expr, eval_array_expr, eval_new_expr, eval_match_expr } from "./eval/expressions"
 import { ClassDeclaration, ReturnStatement, ThrowStatement, WhileStatement } from "typescript";
@@ -63,14 +63,14 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
             if (!env.canContinue) {
                 throw "Can only break in while and for loops.";
             }
-            env.contin = 2;
+            env.contin = ContinueType.Break;
             return MK_NULL();
         }
         case "ContinueStatement": {
             if (!env.canContinue) {
                 throw "Can only continue in while and for loops.";
             }
-            env.contin = 1;
+            env.contin = ContinueType.Continue;
             return MK_NULL();
         }
         default:

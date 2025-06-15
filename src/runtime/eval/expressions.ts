@@ -1,9 +1,7 @@
-import { JsxEmit } from "typescript";
 import { ArrayLiteral, AssignmentExpr, BinaryExpr, CallExpr, Identifier, MatchExpr, MemberExpr, NewExpr, ObjectLiteral } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import { NumberVal, RuntimeVal, MK_NULL, ObjectVal, NativeFnValue, FunctionValue, BooleanVal, StringVal, NullVal, MK_NUMBER, MK_BOOL, ArrayVal, ClassFunctionValue, ClassValue, StaticClassValue, EnumValue } from "../values";
-import { match } from "assert";
 
 export function eval_numeric_binary_expr(lhs: RuntimeVal, rhs: RuntimeVal, operator: string): RuntimeVal {
 

@@ -75,7 +75,7 @@ export interface ContinueStmt extends Stmt {
 export interface WhileStmt extends Stmt {
   kind: "WhileStatement";
   value: Expr;
-  body: Expr[];
+  body: Stmt[];
 }
 
 export interface ReturnStmt extends Stmt {

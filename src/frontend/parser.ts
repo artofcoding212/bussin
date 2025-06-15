@@ -102,9 +102,11 @@ export default class Parser {
             }
             case TokenType.Throw: {
                 this.eat();
+                const value = this.parse_expr();
+                if (this.at().type === TokenType.Semicolon) this.eat();
                 return {
                     kind: "ThrowStatement",
-                    value: this.parse_expr(),
+                    value,
                 } as ThrowStmt;
             }
             case TokenType.If:
@@ -181,10 +183,17 @@ export default class Parser {
 
     parse_return_statement(): ReturnStmt {
         this.eat();
-        const value = this.parse_expr();
-        if (this.at().type == TokenType.Semicolon) {
+        let value;
+        if (this.at().type != TokenType.Semicolon) {
+            value = this.parse_expr();
+            if (this.at().type == TokenType.Semicolon) {
+                this.eat();
+            }
+        } else {
             this.eat();
+            value = { kind: "Identifier", symbol: "null" } as Identifier;
         }
+        
         const r: ReturnStmt = {
             kind: "ReturnStatement",
             value,
@@ -235,7 +244,7 @@ export default class Parser {
                 }
             } else {
                 if (is_static) {
-                    this.expect(TokenType.Equals, `Expetced equals ("=") following static field declaration to show the initial value of the static field.`);
+                    this.expect(TokenType.Equals, `Expected equals ("=") following static field declaration to show the initial value of the static field.`);
                     staticFields.set(name, this.parse_expr());
                 } else {
                     fields.add(name);
@@ -397,7 +406,7 @@ export default class Parser {
                 this.expect(TokenType.Comma, `Expected a comma (",") or closing parenthesis (")") following a "new" expression's argument.`);
             }
         }
-        this.expect(TokenType.CloseParen, `Expected a closing parenthesis ("0") following the "new" expression's parameters.`);
+        this.expect(TokenType.CloseParen, `Expected a closing parenthesis (")") following the "new" expression's parameters.`);
         
         return {
             kind: "NewExpr",
@@ -700,10 +709,15 @@ export default class Parser {
                     }
                     this.expect(TokenType.Arrow, `Expected an arrow ("=>") following match cases to coerce into a body.`);
                     const body = this.parse_block_statement();
-                    cases.set(case_arr, body);
                     if (is_default) {
                         if (defaultCase != undefined) {
                             throw `Can only have one default case in a match body.`;
+                        }
+                        // To prevent adding unnecessary bloat to the interpreter for match expressions,
+                        // we separate the default case from other cases despite them being able to be packaged
+                        // together. 
+                        if (case_arr.length > 0) {
+                            cases.set(case_arr, body);
                         }
                         defaultCase = body;
                     }

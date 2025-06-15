@@ -492,13 +492,19 @@ export function createGlobalEnv(beginTime: number = -1, filePath: string = __dir
     return env;
 }
 
+export enum ContinueType {
+    None=0,
+    Continue=1,
+    Break=2,
+}
+
 export default class Environment {
     private parent?: Environment;
     private variables: Map<string, RuntimeVal>
     private constants: Set<string>;
     public exitWith: RuntimeVal|null = null; // if we return, we set an exit value
     public canContinue: boolean = false;
-    public contin: number = 0; // 0 = none, 1 = continue, 2 = break
+    public contin: ContinueType = ContinueType.None; // 0 = none, 1 = continue, 2 = break
  
     constructor(parentENV?: Environment) {
         //const global = parentENV ? true : false;

@@ -1,6 +1,5 @@
-import { ClassDeclaration } from "typescript";
 import { FunctionDeclaration, IfStatement, Program, Stmt, VarDeclaration, ForStatement, TryCatchStatement, ClassDeclarationStmt, EnumDeclarationStmt, WhileStmt } from "../../frontend/ast";
-import Environment from "../environment";
+import Environment, { ContinueType } from "../environment";
 import { evaluate } from "../interpreter";
 import { BooleanVal, ClassFunctionValue, FunctionValue, MK_NULL, RuntimeVal, StaticClassValue, StaticEnumValue } from "../values";
 import { eval_assignment } from "./expressions";
@@ -49,7 +48,7 @@ export function eval_while_statement(wh: WhileStmt, env: Environment): RuntimeVa
             env.exitWith = this_env.exitWith;
             break;
         }
-        if (this_env.contin == 2) {
+        if (this_env.contin == ContinueType.Break) {
             break;
         }
     }
@@ -86,7 +85,7 @@ function eval_body(body: Stmt[], env: Environment, newEnv: boolean = true, leakS
             result = scope.exitWith;
             break;
         }
-        if (scope.contin > 0) {
+        if (scope.contin == ContinueType.Break || scope.contin == ContinueType.Continue) {
             break;
         }
     }
@@ -113,9 +112,9 @@ export function eval_for_statement(declaration: ForStatement, _env: Environment)
         let sub_env = new Environment(env);
         sub_env.canContinue = true;
         eval_body(body, sub_env, false, true);
-        if (sub_env.contin == 1) {
+        if (sub_env.contin == ContinueType.Continue) {
             continue;
-        } else if (sub_env.contin == 2) {
+        } else if (sub_env.contin == ContinueType.Break) {
             break;
         }
         if (sub_env.exitWith != null) {
@@ -160,7 +159,7 @@ export function eval_class_declaration(decl: ClassDeclarationStmt, env: Environm
     });
 
     decl.staticFuns.forEach((v,k) => {
-        funs.set(k, {
+        staticFuns.set(k, {
             type: "class-function",
             name: v.name,
             parameters: v.parameters,
