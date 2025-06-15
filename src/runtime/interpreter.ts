@@ -1,9 +1,9 @@
 import { MK_NULL, NumberVal, RuntimeVal, StringVal } from "./values";
-import { ArrayLiteral, AssignmentExpr, BinaryExpr, CallExpr, ClassDeclarationStmt, EnumDeclarationStmt, ForStatement, FunctionDeclaration, Identifier, IfStatement, MatchExpr, MemberExpr, NewExpr, NumericLiteral, ObjectLiteral, Program, ReturnStmt, Stmt, StringLiteral, ThrowStmt, TryCatchStatement, VarDeclaration } from "../frontend/ast";
+import { ArrayLiteral, AssignmentExpr, BinaryExpr, CallExpr, ClassDeclarationStmt, EnumDeclarationStmt, ForStatement, FunctionDeclaration, Identifier, IfStatement, MatchExpr, MemberExpr, NewExpr, NumericLiteral, ObjectLiteral, Program, ReturnStmt, Stmt, StringLiteral, ThrowStmt, TryCatchStatement, VarDeclaration, WhileStmt } from "../frontend/ast";
 import Environment from "./environment"
-import { eval_function_declaration, eval_program, eval_val_declaration, eval_if_statement, eval_for_statement, eval_try_catch_statement, eval_class_declaration, eval_enum_declaration } from "./eval/statements";
+import { eval_function_declaration, eval_program, eval_val_declaration, eval_if_statement, eval_for_statement, eval_try_catch_statement, eval_class_declaration, eval_enum_declaration, eval_while_statement } from "./eval/statements";
 import { eval_identifier, eval_binary_expr, eval_assignment, eval_object_expr, eval_call_expr, eval_member_expr, eval_array_expr, eval_new_expr, eval_match_expr } from "./eval/expressions"
-import { ClassDeclaration, ReturnStatement, ThrowStatement } from "typescript";
+import { ClassDeclaration, ReturnStatement, ThrowStatement, WhileStatement } from "typescript";
 
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
@@ -56,7 +56,9 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
         case "ClassDeclaration":
             return eval_class_declaration(astNode as ClassDeclarationStmt, env);
         case "EnumDeclaration":
-            return eval_enum_declaration(astNode as EnumDeclarationStmt, env);
+            return eval_enum_declaration(astNode as EnumDeclarationStmt, env)
+        case "WhileStatement":
+            return eval_while_statement(astNode as WhileStmt, env);
         case "BreakStatement": {
             if (!env.canContinue) {
                 throw "Can only break in while and for loops.";

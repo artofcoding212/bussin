@@ -1,5 +1,5 @@
 import { ClassDeclaration } from "typescript";
-import { FunctionDeclaration, IfStatement, Program, Stmt, VarDeclaration, ForStatement, TryCatchStatement, ClassDeclarationStmt, EnumDeclarationStmt } from "../../frontend/ast";
+import { FunctionDeclaration, IfStatement, Program, Stmt, VarDeclaration, ForStatement, TryCatchStatement, ClassDeclarationStmt, EnumDeclarationStmt, WhileStmt } from "../../frontend/ast";
 import Environment from "../environment";
 import { evaluate } from "../interpreter";
 import { BooleanVal, ClassFunctionValue, FunctionValue, MK_NULL, RuntimeVal, StaticClassValue, StaticEnumValue } from "../values";
@@ -34,6 +34,28 @@ export function eval_function_declaration(declaration: FunctionDeclaration, env:
     return declaration.name == "<anonymous>" ? fn : env.declareVar(declaration.name, fn, true);
 }
 
+export function eval_while_statement(wh: WhileStmt, env: Environment): RuntimeVal {
+    const main_env = new Environment(env);
+    let last: RuntimeVal = MK_NULL();
+    while (true) {
+        const this_env = new Environment(env);
+        this_env.canContinue = true;
+        const val = evaluate(wh.value, this_env);
+        if (val.type != "boolean" || !(val as BooleanVal).value) {
+            break;
+        }
+        last = eval_body(wh.body, this_env, false, true);
+        if (this_env.exitWith != null) {
+            env.exitWith = this_env.exitWith;
+            break;
+        }
+        if (this_env.contin == 2) {
+            break;
+        }
+    }
+    return last;
+}
+
 export function eval_if_statement(declaration: IfStatement, env: Environment): RuntimeVal {
     const test = evaluate(declaration.test, env);
 
@@ -62,6 +84,9 @@ function eval_body(body: Stmt[], env: Environment, newEnv: boolean = true, leakS
         result = evaluate(stmt, scope);
         if (scope.exitWith != null) {
             result = scope.exitWith;
+            break;
+        }
+        if (scope.contin > 0) {
             break;
         }
     }

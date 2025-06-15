@@ -1,5 +1,5 @@
-import { ClassDeclaration, ReturnStatement, ThrowStatement, WhileStatement } from "typescript";
-import { Stmt, Program, Expr, BinaryExpr, NumericLiteral, Identifier, VarDeclaration, AssignmentExpr, Property, ObjectLiteral, CallExpr, MemberExpr, FunctionDeclaration, StringLiteral, IfStatement, ForStatement, TryCatchStatement, ArrayLiteral, ClassDeclarationStmt, ReturnStmt, NewExpr, WhileStmt, EnumDeclarationStmt, MatchExpr, ThrowStmt } from "./ast";
+import { BreakStatement, ClassDeclaration, ReturnStatement, ThrowStatement, WhileStatement } from "typescript";
+import { Stmt, Program, Expr, BinaryExpr, NumericLiteral, Identifier, VarDeclaration, AssignmentExpr, Property, ObjectLiteral, CallExpr, MemberExpr, FunctionDeclaration, StringLiteral, IfStatement, ForStatement, TryCatchStatement, ArrayLiteral, ClassDeclarationStmt, ReturnStmt, NewExpr, WhileStmt, EnumDeclarationStmt, MatchExpr, ThrowStmt, BreakStmt, ContinueStmt } from "./ast";
 import { tokenize, Token, TokenType } from "./lexer";
 
 export default class Parser {
@@ -123,6 +123,12 @@ export default class Parser {
                 return this.parse_enum_declaration();
             case TokenType.While:
                 return this.parse_while_statement();
+            case TokenType.Break:
+                this.eat();
+                return {kind: "BreakStatement"} as BreakStmt;
+            case TokenType.Continue:
+                this.eat();
+                return {kind: "ContinueStatement"} as ContinueStmt;
             default:
                 return this.parse_expr();
         }
