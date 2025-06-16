@@ -69,7 +69,7 @@ export default class Parser {
         const prev = this.eat();
 
         if (!prev || prev.type != type) {
-            console.error(`Parser error: (Ln ${this.lastNonNLLine}, Col ${this.lastNonNLColumn + 1})\n`, err, "Expecting:", type, 'Got:', prev.type);
+            console.error(`Parser error: (Ln ${this.lastNonNLLine}, Col ${this.lastNonNLColumn + 1})\n`, err, "Expecting:", TokenType[type], 'Got:', TokenType[prev.type]);
             process.exit(1)
         }
 

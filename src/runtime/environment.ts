@@ -91,6 +91,15 @@ export function createGlobalEnv(beginTime: number = -1, filePath: string = __dir
         });
     }), true);
 
+    env.declareVar("push", MK_NATIVE_FN((args) => {
+        (args[0] as ArrayVal).values.push(args[1]);
+        return MK_NULL();
+    }), true);
+
+    env.declareVar("pop", MK_NATIVE_FN((args) => {
+        return (args[0] as ArrayVal).values.pop();
+    }), true);
+
     env.declareVar("math", MK_OBJECT(
         new Map()
             .set("pi", MK_NUMBER(Math.PI))
@@ -98,6 +107,21 @@ export function createGlobalEnv(beginTime: number = -1, filePath: string = __dir
             .set("sqrt", MK_NATIVE_FN((args) => {
                 const arg = (args[0] as NumberVal).value;
                 return MK_NUMBER(Math.sqrt(arg));
+            }))
+            .set("bor", MK_NATIVE_FN((args) => {
+                return MK_NUMBER((args[0] as NumberVal).value | (args[1] as NumberVal).value);
+            }))
+            .set("band", MK_NATIVE_FN((args) => {
+                return MK_NUMBER((args[0] as NumberVal).value & (args[1] as NumberVal).value);
+            }))
+            .set("bxor", MK_NATIVE_FN((args) => {
+                return MK_NUMBER((args[0] as NumberVal).value ^ (args[1] as NumberVal).value);
+            }))
+            .set("blsh", MK_NATIVE_FN((args) => {
+                return MK_NUMBER((args[0] as NumberVal).value << (args[1] as NumberVal).value);
+            }))
+            .set("brsh", MK_NATIVE_FN((args) => {
+                return MK_NUMBER((args[0] as NumberVal).value >> (args[1] as NumberVal).value);
             }))
             .set("random", MK_NATIVE_FN((args) => {
                 const arg1 = (args[0] as NumberVal).value;
